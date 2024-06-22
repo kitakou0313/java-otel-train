@@ -19,3 +19,5 @@ RUN if [ "${INSTALL_MAVEN}" = "true" ]; then su vscode -c "umask 0002 && . /usr/
 USER vscode
 RUN wget https://raw.githubusercontent.com/kitakou0313/dotfiles/main/installer.sh
 RUN bash installer.sh
+
+ENV TZ="Asia/Tokyo"
