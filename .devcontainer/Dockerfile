@@ -17,7 +17,8 @@ RUN if [ "${INSTALL_MAVEN}" = "true" ]; then su vscode -c "umask 0002 && . /usr/
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
 
 USER vscode
-RUN wget https://raw.githubusercontent.com/kitakou0313/dotfiles/main/installer.sh
+WORKDIR /home/vscode
+RUN wget https://raw.githubusercontent.com/kitakou0313/dotfiles/main/installer.sh && chmod 777 installer.sh
 RUN bash installer.sh
 
 ENV TZ="Asia/Tokyo"
