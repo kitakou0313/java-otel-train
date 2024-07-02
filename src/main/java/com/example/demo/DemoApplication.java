@@ -6,6 +6,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdk;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -23,6 +27,11 @@ public class DemoApplication {
 				System.out.println(beanName);
 			}
 		};
+	}
+
+	@Bean
+	public OpenTelemetry openTelemetry(){
+		return AutoConfiguredOpenTelemetrySdk.initialize().getOpenTelemetrySdk();
 	}
 
 
