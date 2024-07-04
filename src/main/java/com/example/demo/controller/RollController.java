@@ -10,6 +10,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.demo.Dice;
 
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -17,6 +20,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RestController
 public class RollController {
     private static final Logger logger = LoggerFactory.getLogger(RollController.class);
+    private final Tracer tracer;
+
+    RollController(OpenTelemetry openTelemetry){
+        tracer = openTelemetry.getTracer(
+            RollController.class.getName(), "0.1.0"
+        );
+    }
 
     @GetMapping("/rolldice")
     public List<Integer> index(
