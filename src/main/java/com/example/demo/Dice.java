@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Context;
 import io.opentelemetry.api.OpenTelemetry;
 
 public class Dice {
@@ -25,17 +27,34 @@ public class Dice {
       this(min, max, OpenTelemetry.noop());
     }
 
-    private int rollOnce(){
+    private int rollOnce(Span parentSpan){
+      Span childSpan = tracer.spanBuilder(
+        "child"
+      ).setParent(Context.current().with(parentSpan))
+      .startSpan();
+
+      try {
         return ThreadLocalRandom.current().nextInt(
-            this.min, this.max+1
-        );
+          this.min, this.max+1
+        ); 
+      } finally{
+        childSpan.end();
+      }
     }
 
     public List<Integer> rollTheDice(int rolls) {
-    List<Integer> results = new ArrayList<Integer>();
-    for (int i = 0; i < rolls; i++) {
-      results.add(this.rollOnce());
-    }
-    return results;
+      Span paretSpan = tracer.spanBuilder(
+        "parent"
+      ).startSpan();
+
+      try {
+        List<Integer> results = new ArrayList<Integer>();
+        for (int i = 0; i < rolls; i++) {
+          results.add(this.rollOnce(paretSpan));
+        }
+        return results;
+      }finally {
+        paretSpan.end();
+      }
   }
 }
