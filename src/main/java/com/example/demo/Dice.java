@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
+import io.opentelemetry.context.Scope;
 import io.opentelemetry.api.OpenTelemetry;
 
 public class Dice {
@@ -27,13 +28,10 @@ public class Dice {
       this(min, max, OpenTelemetry.noop());
     }
 
-    private int rollOnce(Span parentSpan){
-      Span childSpan = tracer.spanBuilder(
-        "child"
-      ).setParent(Context.current().with(parentSpan))
-      .startSpan();
+    private int rollOnce(){
+      Span childSpan = tracer.spanBuilder("child").startSpan();
 
-      try {
+      try (Scope scope = childSpan.makeCurrent()){
         return ThreadLocalRandom.current().nextInt(
           this.min, this.max+1
         ); 
@@ -47,10 +45,10 @@ public class Dice {
         "parent"
       ).startSpan();
 
-      try {
+      try (Scope scope = paretSpan.makeCurrent()){
         List<Integer> results = new ArrayList<Integer>();
         for (int i = 0; i < rolls; i++) {
-          results.add(this.rollOnce(paretSpan));
+          results.add(this.rollOnce());
         }
         return results;
       }finally {
