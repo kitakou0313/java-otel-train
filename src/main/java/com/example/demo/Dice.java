@@ -32,9 +32,11 @@ public class Dice {
       Span childSpan = tracer.spanBuilder("child").startSpan();
 
       try (Scope scope = childSpan.makeCurrent()){
-        return ThreadLocalRandom.current().nextInt(
+        int res = ThreadLocalRandom.current().nextInt(
           this.min, this.max+1
         ); 
+        childSpan.setAttribute("dice_val", res);
+        return res;
       } finally{
         childSpan.end();
       }
