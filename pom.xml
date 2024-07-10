@@ -74,6 +74,12 @@
           	<artifactId>opentelemetry-sdk-extension-autoconfigure-spi</artifactId>
         </dependency>
 
+		<dependency>
+    		<groupId>io.opentelemetry.semconv</groupId>
+    		<artifactId>opentelemetry-semconv</artifactId>
+    		<version>1.25.0-alpha</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
