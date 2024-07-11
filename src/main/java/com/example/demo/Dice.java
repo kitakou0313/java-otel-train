@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
@@ -54,14 +55,17 @@ public class Dice {
         "parent"
       ).startSpan();
 
+      List<Integer> results = new ArrayList<Integer>();
       try (Scope scope = paretSpan.makeCurrent()){
-        List<Integer> results = new ArrayList<Integer>();
         for (int i = 0; i < rolls; i++) {
           results.add(this.rollOnce());
         }
-        return results;
-      }finally {
+      } catch (Throwable throwable) {
+          paretSpan.setStatus(StatusCode.ERROR, "Something bad happened!");
+          paretSpan.recordException(throwable);
+      } finally {
         paretSpan.end();
-      }
+      };
+      return results;
   }
 }
