@@ -57,8 +57,16 @@ public class Dice {
 
       List<Integer> results = new ArrayList<Integer>();
       try (Scope scope = paretSpan.makeCurrent()){
+        Context context = Context.current();
         for (int i = 0; i < rolls; i++) {
-          results.add(this.rollOnce());
+          Thread thread = new Thread(
+          context.wrap(new Runnable() {
+            @Override
+            public void run(){
+              results.add(this.rollOnce());
+            }
+          })
+        );
         }
       } catch (Throwable throwable) {
           paretSpan.setStatus(StatusCode.ERROR, "Something bad happened!");
