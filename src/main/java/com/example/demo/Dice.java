@@ -32,18 +32,13 @@ public class Dice {
       this(min, max, OpenTelemetry.noop());
     }
 
-    private int rollOnce(){
-      Span childSpan = tracer.spanBuilder("child").startSpan();
+    private int rollOnce(Span parent){
+      Span childSpan = tracer.spanBuilder("child").addLink(parent.getSpanContext()).startSpan();
 
       try (Scope scope = childSpan.makeCurrent()){
         int res = ThreadLocalRandom.current().nextInt(
           this.min, this.max+1
-        ); 
-        childSpan.addEvent("Init");
-        Attributes eventAttributes = Attributes.of(
-          AttributeKey.stringKey("key"), "value",
-          AttributeKey.longKey("result"), 0l); 
-        childSpan.addEvent("End", eventAttributes);
+        );
         return res;
       } finally{
         childSpan.end();
@@ -58,15 +53,9 @@ public class Dice {
       List<Integer> results = new ArrayList<Integer>();
       try (Scope scope = paretSpan.makeCurrent()){
         Context context = Context.current();
+        
         for (int i = 0; i < rolls; i++) {
-          Thread thread = new Thread(
-          context.wrap(new Runnable() {
-            @Override
-            public void run(){
-              results.add(this.rollOnce());
-            }
-          })
-        );
+          results.add(this.rollOnce(paretSpan));
         }
       } catch (Throwable throwable) {
           paretSpan.setStatus(StatusCode.ERROR, "Something bad happened!");
