@@ -32,13 +32,13 @@ public class Dice {
       this(min, max, OpenTelemetry.noop());
     }
 
-    private int rollOnce(Span parent){
-      Span childSpan = tracer.spanBuilder("child").addLink(parent.getSpanContext()).startSpan();
-
+    private int rollOnce(){
+      Span childSpan = tracer.spanBuilder("builder").startSpan();
       try (Scope scope = childSpan.makeCurrent()){
         int res = ThreadLocalRandom.current().nextInt(
           this.min, this.max+1
         );
+        childSpan.setAttribute("res", res);
         return res;
       } finally{
         childSpan.end();
@@ -46,22 +46,21 @@ public class Dice {
     }
 
     public List<Integer> rollTheDice(int rolls) {
-      Span paretSpan = tracer.spanBuilder(
+      Span parentSpan = tracer.spanBuilder(
         "parent"
       ).startSpan();
 
       List<Integer> results = new ArrayList<Integer>();
-      try (Scope scope = paretSpan.makeCurrent()){
-        Context context = Context.current();
-        
+      // makeCurrentにより，Span.current()で返されるSpan ClassのObjectが更新される
+      try (Scope scope = parentSpan.makeCurrent()){
         for (int i = 0; i < rolls; i++) {
-          results.add(this.rollOnce(paretSpan));
+          results.add(this.rollOnce());
         }
       } catch (Throwable throwable) {
-          paretSpan.setStatus(StatusCode.ERROR, "Something bad happened!");
-          paretSpan.recordException(throwable);
+          parentSpan.setStatus(StatusCode.ERROR, "Something bad happened!");
+          parentSpan.recordException(throwable);
       } finally {
-        paretSpan.end();
+        parentSpan.end();
       };
       return results;
   }
