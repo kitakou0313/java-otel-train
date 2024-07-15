@@ -33,7 +33,7 @@ public class Dice {
     }
 
     private int rollOnce(){
-      Span childSpan = tracer.spanBuilder("builder").startSpan();
+      Span childSpan = tracer.spanBuilder("child").startSpan();
       try (Scope scope = childSpan.makeCurrent()){
         int res = ThreadLocalRandom.current().nextInt(
           this.min, this.max+1
