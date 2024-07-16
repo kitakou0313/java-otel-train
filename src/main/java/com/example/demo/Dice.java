@@ -59,6 +59,7 @@ public class Dice {
       } catch (Throwable throwable) {
           parentSpan.setStatus(StatusCode.ERROR, "Something bad happened!");
           parentSpan.recordException(throwable);
+          throw throwable;
       } finally {
         parentSpan.end();
       };
