@@ -12,6 +12,7 @@ import com.example.demo.Dice;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 
@@ -53,6 +54,7 @@ public class RollController {
               }
               return result;
         } catch(Throwable t){
+            span.setStatus(StatusCode.ERROR, "Something bad happened!");
             span.recordException(t);
             throw t;
         }finally{
