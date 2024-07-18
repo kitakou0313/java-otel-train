@@ -15,7 +15,7 @@ import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import io.opentelemetry.sdk.resources.Resource;
-import io.opentelemetry.semconv.ResourceAttributes;
+import io.opentelemetry.semconv.ServiceAttributes;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -28,7 +28,9 @@ public class DemoApplication {
 
 	@Bean
   	public OpenTelemetry openTelemetry() {
-		Resource resource = Resource.getDefault().toBuilder().put(ResourceAttributes.SERVICE_NAME, "dice-server").put(ResourceAttributes.SERVICE_VERSION, "0.1.0").build();
+		Resource resource = Resource.getDefault().toBuilder().put(
+			ServiceAttributes.SERVICE_NAME, "dice-server"
+		).put(ServiceAttributes.SERVICE_VERSION, "0.1.0").build();
 
 		SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
 			.addSpanProcessor(SimpleSpanProcessor.create(LoggingSpanExporter.create()))
