@@ -49,7 +49,7 @@ public class Dice {
       Span parentSpan = tracer.spanBuilder(
         "parent"
       ).startSpan();
-
+      System.out.println(parentSpan.getSpanContext().toString());
       List<Integer> results = new ArrayList<Integer>();
       // makeCurrentにより，Span.current()で返されるSpan ClassのObjectが更新される
       try (Scope scope = parentSpan.makeCurrent()){
