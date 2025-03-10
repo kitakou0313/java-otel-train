@@ -80,6 +80,12 @@
     		<version>1.25.0-alpha</version>
 		</dependency>
 
+		<dependency>
+        	<groupId>io.netty</groupId>
+        	<artifactId>netty-all</artifactId>
+        	<version>4.1.107.Final</version> <!-- 最新バージョンを確認して変更 -->
+    	</dependency>
+
 	</dependencies>
 
 	<build>
