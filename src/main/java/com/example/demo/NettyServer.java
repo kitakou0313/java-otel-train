@@ -27,7 +27,7 @@ public class NettyServer {
                 protected void initChannel(SocketChannel ch){
                     ChannelPipeline pipeline = ch.pipeline();
                     pipeline.addLast(new HttpServerCodec());
-                    pipeline.addLast(new HttpRequest)
+                    pipeline.addLast(new HttpHandler());
                 }
             });
             ChannelFuture future = bootstrap.bind(port).sync();
